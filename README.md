@@ -1,5 +1,7 @@
 # தமிழ் கவிதை Status  
 
+[![Publish on Server](https://github.com/mskian/tamil-kavithai-status/actions/workflows/deploy.yml/badge.svg)](https://github.com/mskian/tamil-kavithai-status/actions/workflows/deploy.yml)  
+
 "தமிழ் கவிதை நிலை – இங்கே நான் எனது பிடித்த தமிழ் பொன்மொழிகளையும் கவிதைகளையும் பகிர்கிறேன் (Tamil Kavithai Status - Here i Share My Favourite Tamil Quotes and Kavithai.)"  
 
 ## Built Using
