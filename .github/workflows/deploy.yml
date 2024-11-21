@@ -28,7 +28,6 @@ jobs:
       - name: Purge Cache
         run: |
           curl -X GET ${{ secrets.CACHE_URL }} \
-            -H "Cache-Control: no-cache" \
             -o /dev/null -s
         env:
           CACHE_URL: ${{ secrets.CACHE_URL }}
