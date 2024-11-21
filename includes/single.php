@@ -87,5 +87,5 @@ $content = escapeHtml($quote['content']);
         </a>
     </div>
 </nav>
-<div class="container" style="margin-top: 80px;">
+<div class="container" style="margin-top: 35px;">
 <div class="content">
