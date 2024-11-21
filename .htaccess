@@ -18,6 +18,16 @@ order allow,deny
 Deny from all
 </Files>
 
+<Files README.md>
+order allow,deny
+Deny from all
+</Files>
+
+<Files LICENSE>
+order allow,deny
+Deny from all
+</Files>
+
 RewriteEngine On
 RewriteRule ^admin(/.*|)$ - [R=404,L]
 
@@ -26,6 +36,12 @@ RewriteRule ^auth(/.*|)$ - [R=404,L]
 
 RewriteEngine On
 RewriteRule ^k/([a-zA-Z0-9\-]+)$ kavithai.php?slug=$1 [L,QSA]
+
+RewriteEngine On
+RewriteRule ^robots.txt$ robots.php [L]
+
+RewriteEngine On
+RewriteRule ^sitemap.xml$ sitemap.php [L]
 
 RewriteCond %{QUERY_STRING} \.\.\/ [NC,OR]
 RewriteCond %{QUERY_STRING} \=\< [NC,OR]
