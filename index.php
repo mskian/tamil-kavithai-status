@@ -5,7 +5,7 @@ require_once('./includes/functions.php');
 require_once('./includes/header.php');
 
 $page = filter_var($_GET['page'] ?? 1, FILTER_VALIDATE_INT);
-$page = ($page && $page > 0) ? $page : 1;
+$page = ($page !== false && $page > 0) ? $page : 1;
 
 try {
     $quotes = getQuotesForPage($page);
@@ -17,9 +17,23 @@ try {
     if ($totalPages < 1) {
         throw new Exception('No pages available.');
     }
+
 } catch (Exception $e) {
     error_log($e->getMessage());
-    echo '<p class="notification is-danger">An error occurred while fetching quotes. Please try again later.</p>';
+    // Prepare a error message to display to the user
+    $errorMessage = 'An error occurred while fetching quotes. Please try again later.';
+
+    // Show a more specific message based on the exception type (if needed)
+    if ($e->getMessage() === 'No quotes found for this page.') {
+        $errorMessage = 'There are no quotes available for the selected page. Please try another page.';
+    } elseif ($e->getMessage() === 'No pages available.') {
+        $errorMessage = 'No pages are available at the moment. Please try again later.';
+    }
+
+        // Display a user-friendly error message with an option to try again later
+    echo '<div class="container" style="margin-top: 80px;">
+        <p class="notification is-danger">' . htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8') . '</p>
+        </div>';
     require_once('./includes/footer.php');
     exit;
 }

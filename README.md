@@ -11,11 +11,14 @@
 - HTML
 - Bulma CSS
 - SEO Meta tags  
+- Pagination  
+- 404 Page  
 - Dynamic Sitemap and Robots.txt  
 
 ## Content Database
 
-- Add kavithai in `content/quotes.md` Check the Below Format
+- Add kavithai in `content` Check the Below Format
+- keep File name as `quote1.md, quote2.md etc...`
 
 ```md
 # Kavithai 1

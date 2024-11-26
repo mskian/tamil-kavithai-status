@@ -10,11 +10,13 @@
 function parseMarkdownFile(string $filename): array {
     $file_path = CONTENT_DIR . '/' . $filename . '.md';
 
+    // Ensure the file exists before proceeding
     if (!file_exists($file_path)) {
         throw new Exception("File not found: $filename.md");
     }
 
-    $content = file_get_contents($file_path);
+    // Attempt to read the file content
+    $content = @file_get_contents($file_path);
     if ($content === false) {
         throw new Exception("Unable to read the file: $filename.md");
     }
@@ -34,10 +36,9 @@ function parseMarkdownQuotes(string $markdown): array {
 
     if (preg_match_all($pattern, $markdown, $matches, PREG_SET_ORDER)) {
         foreach ($matches as $match) {
-
             $quotes[] = [
-                'title' => escapeHtml($match[1]),
-                'slug' => escapeHtml($match[2]),
+                'title'   => escapeHtml($match[1]),
+                'slug'    => escapeHtml($match[2]),
                 'content' => escapeHtml($match[3])
             ];
         }
@@ -47,7 +48,7 @@ function parseMarkdownQuotes(string $markdown): array {
 }
 
 /**
- * Get quotes for a specific page, with pagination.
+ * Get quotes from separate markdown files with pagination.
  * 
  * @param int $page The page number to retrieve.
  * @return array Paginated quotes.
@@ -55,11 +56,27 @@ function parseMarkdownQuotes(string $markdown): array {
  */
 function getQuotesForPage(int $page = 1): array {
     try {
-        $quotes = parseMarkdownFile('quotes');
+        // Get the list of all markdown files in the quotes directory.
+        $files = glob(CONTENT_DIR . '/quote*.md');
+        if (!$files) {
+            throw new Exception("No quote markdown files found in the directory.");
+        }
+
+        $quotes = [];
+        // Loop through files and parse quotes.
+        foreach ($files as $file) {
+            $content = @file_get_contents($file);
+            if ($content === false) {
+                throw new Exception("Unable to read the file: $file");
+            }
+            $quotes = array_merge($quotes, parseMarkdownQuotes($content));
+        }
+
+        // Implement pagination
         $offset = ($page - 1) * ITEMS_PER_PAGE;
         return array_slice($quotes, $offset, ITEMS_PER_PAGE);
     } catch (Exception $e) {
- 
+        // Catch and log error, then rethrow with message
         throw new Exception("Error fetching quotes for page $page: " . $e->getMessage());
     }
 }
@@ -71,10 +88,24 @@ function getQuotesForPage(int $page = 1): array {
  */
 function getTotalPages(): int {
     try {
-        $quotes = parseMarkdownFile('quotes');
+        $files = glob(CONTENT_DIR . '/quote*.md');
+        if (!$files) {
+            throw new Exception("No quote markdown files found in the directory.");
+        }
+
+        $quotes = [];
+        // Loop through files and parse quotes
+        foreach ($files as $file) {
+            $content = @file_get_contents($file);
+            if ($content === false) {
+                throw new Exception("Unable to read the file: $file");
+            }
+            $quotes = array_merge($quotes, parseMarkdownQuotes($content));
+        }
+
         return ceil(count($quotes) / ITEMS_PER_PAGE);
     } catch (Exception $e) {
-
+        // Catch and log error, then rethrow with message
         throw new Exception("Error calculating total pages: " . $e->getMessage());
     }
 }
@@ -87,15 +118,28 @@ function getTotalPages(): int {
  */
 function getQuoteBySlug(string $slug): ?array {
     try {
-        $quotes = parseMarkdownFile('quotes');
-        foreach ($quotes as $quote) {
-            if ($quote['slug'] === $slug) {
-                return $quote;
+        $files = glob(CONTENT_DIR . '/quote*.md');
+        if (!$files) {
+            throw new Exception("No quote markdown files found in the directory.");
+        }
+
+        foreach ($files as $file) {
+            $content = @file_get_contents($file);
+            if ($content === false) {
+                throw new Exception("Unable to read the file: $file");
+            }
+
+            $quotes = parseMarkdownQuotes($content);
+            foreach ($quotes as $quote) {
+                if ($quote['slug'] === $slug) {
+                    return $quote;
+                }
             }
         }
+
         return null;
     } catch (Exception $e) {
- 
+        // Catch and log error, then rethrow with message
         throw new Exception("Error fetching quote by slug '$slug': " . $e->getMessage());
     }
 }
@@ -105,10 +149,16 @@ function getQuoteBySlug(string $slug): ?array {
  * 
  * @param mixed $page The page number to validate.
  * @return int The validated page number.
+ * @throws InvalidArgumentException If the page is invalid.
  */
 function validatePage($page): int {
     $validatedPage = filter_var($page, FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]]);
-    return $validatedPage ? $validatedPage : 1;
+    
+    if ($validatedPage === false) {
+        throw new InvalidArgumentException('Invalid page number.');
+    }
+
+    return $validatedPage;
 }
 
 /**

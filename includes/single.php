@@ -2,6 +2,7 @@
 
 require_once('./includes/config.php');
 require_once('./includes/functions.php');
+require_once('./includes/404.php');
 
 header('X-Frame-Options: DENY');
 header('X-XSS-Protection: 1; mode=block');
@@ -19,8 +20,7 @@ if (isset($_GET['slug'])) {
     $slug = filter_var($_GET['slug'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     
     if (!preg_match('/^[a-zA-Z0-9\-]+$/', $slug)) {
-        echo "<h2 class='title'>Invalid slug format.</h2>";
-        require_once('./includes/footer.php');
+        showErrorPage('Invalid slug format');
         exit;
     }
 
@@ -32,13 +32,11 @@ if (isset($_GET['slug'])) {
         }
     } catch (Exception $e) {
         error_log($e->getMessage());
-        echo "<h2 class='title'>An error occurred. Please try again later.</h2>";
-        require_once('./includes/footer.php');
+        showErrorPage('404 - Quote not found.');
         exit;
     }
 } else {
-    echo "<h2 class='title'>Invalid request.</h2>";
-    require_once('./includes/footer.php');
+    showErrorPage('Invalid request.');
     exit;
 }
 
