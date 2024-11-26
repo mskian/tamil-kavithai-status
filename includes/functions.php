@@ -72,6 +72,9 @@ function getQuotesForPage(int $page = 1): array {
             $quotes = array_merge($quotes, parseMarkdownQuotes($content));
         }
 
+        // Reverse the quotes array to display them from bottom to top
+        $quotes = array_reverse($quotes);
+
         // Implement pagination
         $offset = ($page - 1) * ITEMS_PER_PAGE;
         return array_slice($quotes, $offset, ITEMS_PER_PAGE);
